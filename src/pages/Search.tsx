@@ -1,37 +1,49 @@
-import { useModpackStore } from "../store/modpackStore";
-
-const mods = [
-  { id: "sodium", name: "Sodium" },
-  { id: "iris", name: "Iris" },
-  { id: "lithium", name: "Lithium" },
-];
+import { useState } from "react";
+import SearchBar from "../components/SearchBar";
+import FilterBar from "../components/FilterBar";
+import ModCard from "../components/ModCard";
+import { searchMods } from "../services/modrinth";
+import type { Mod } from "../types/mod";
 
 export default function Search() {
-  const addMod = useModpackStore((s) => s.addMod);
+  const [mods, setMods] = useState<Mod[]>([]);
+  const [loader, setLoader] = useState("");
+  const [version, setVersion] = useState("");
+
+  async function handleSearch(query: string) {
+    if (!query.trim()) {
+      setMods([]);
+      return;
+    }
+
+    try {
+      const result = await searchMods({
+        query,
+        limit: 20,
+      });
+
+      setMods(result.hits);
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
-    <div className="space-y-3">
+    <div className="min-h-screen bg-zinc-950 text-white">
+      <SearchBar onSearch={handleSearch} />
 
-      <input
-        placeholder="Search mods..."
-        className="w-full p-3 rounded-lg bg-[#18181B] outline-none"
+      <FilterBar
+        loader={loader}
+        version={version}
+        onLoaderChange={setLoader}
+        onVersionChange={setVersion}
       />
 
-      {mods.map((mod) => (
-        <div
-          key={mod.id}
-          className="bg-[#18181B] p-3 rounded-lg flex justify-between items-center"
-        >
-          <span>{mod.name}</span>
-
-          <button
-            onClick={() => addMod(mod)}
-            className="text-green-400"
-          >
-            Add
-          </button>
-        </div>
-      ))}
+      <div className="p-4">
+        {mods.map((mod) => (
+          <ModCard key={mod.id} mod={mod} />
+        ))}
+      </div>
     </div>
   );
 }
