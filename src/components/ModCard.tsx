@@ -1,64 +1,78 @@
-import type { Mod } from "../types/mod";
 import { useModpackStore } from "../store/modpackStore";
 
-interface ModCardProps {
-  mod: Mod;
-}
+type Props = {
+  mod: any;
+};
 
-export default function ModCard({ mod }: ModCardProps) {
+export default function ModCard({ mod }: Props) {
   const addMod = useModpackStore((state) => state.addMod);
+  const removeMod = useModpackStore((state) => state.removeMod);
+
   const addFavorite = useModpackStore((state) => state.addFavorite);
+  const removeFavorite = useModpackStore((state) => state.removeFavorite);
+
+  const mods = useModpackStore((state) => state.mods);
+  const favorites = useModpackStore((state) => state.favorites);
+
+  const inModpack = mods.some((m) => m.id === mod.id);
+  const inFavorites = favorites.some((m) => m.id === mod.id);
 
   return (
-    <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4 shadow-lg">
-      <div className="flex gap-4">
-        <img
-          src={mod.icon_url}
-          alt={mod.title}
-          className="w-16 h-16 rounded-lg bg-zinc-800"
-        />
+    <div className="bg-zinc-900 rounded-xl p-4 mb-3 flex gap-4">
+      {/* ICON */}
+      <img
+        src={mod.icon_url}
+        alt={mod.title}
+        className="w-12 h-12 rounded-lg"
+      />
 
-        <div className="flex-1">
-          <h2 className="text-lg font-bold text-white">
-            {mod.title}
-          </h2>
+      {/* INFO */}
+      <div className="flex-1">
+        <h2 className="font-bold">{mod.title}</h2>
+        <p className="text-xs text-zinc-400">
+          {mod.author} • {mod.downloads} downloads
+        </p>
 
-          <p className="text-sm text-zinc-400 mt-1">
-            {mod.description}
-          </p>
+        <p className="text-sm text-zinc-500 mt-1 line-clamp-2">
+          {mod.description}
+        </p>
 
-          <div className="flex flex-wrap gap-2 mt-3">
-            {mod.categories.map((category) => (
-              <span
-                key={category}
-                className="bg-zinc-800 text-xs px-2 py-1 rounded-full"
-              >
-                {category}
-              </span>
-            ))}
-          </div>
+        {/* ACTIONS */}
+        <div className="flex gap-2 mt-3 flex-wrap">
+          
+          {/* MODPACK BUTTON */}
+          {!inModpack ? (
+            <button
+              onClick={() => addMod(mod)}
+              className="bg-green-600 px-3 py-1 rounded-lg text-sm"
+            >
+              + Add
+            </button>
+          ) : (
+            <button
+              onClick={() => removeMod(mod.id)}
+              className="bg-red-600 px-3 py-1 rounded-lg text-sm"
+            >
+              Remove
+            </button>
+          )}
 
-          <div className="flex justify-between items-center mt-4">
-            <span className="text-xs text-zinc-500">
-              ⬇ {mod.downloads.toLocaleString()}
-            </span>
-
-            <div className="flex gap-2">
-              <button
-                onClick={() => addFavorite(mod)}
-                className="px-3 py-2 rounded-lg bg-pink-600 hover:bg-pink-500"
-              >
-                ❤️
-              </button>
-
-              <button
-                onClick={() => addMod(mod)}
-                className="px-3 py-2 rounded-lg bg-green-600 hover:bg-green-500"
-              >
-                Add
-              </button>
-            </div>
-          </div>
+          {/* FAVORITE BUTTON */}
+          {!inFavorites ? (
+            <button
+              onClick={() => addFavorite(mod)}
+              className="bg-pink-600 px-3 py-1 rounded-lg text-sm"
+            >
+              ♥ Fav
+            </button>
+          ) : (
+            <button
+              onClick={() => removeFavorite(mod.id)}
+              className="bg-gray-600 px-3 py-1 rounded-lg text-sm"
+            >
+              Unfav
+            </button>
+          )}
         </div>
       </div>
     </div>

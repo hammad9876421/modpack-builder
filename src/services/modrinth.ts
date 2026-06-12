@@ -1,11 +1,30 @@
 const API_BASE = "https://api.modrinth.com/v2";
 
-export async function searchMods(query: string) {
+export async function searchMods(
+  query: string,
+  loader?: string,
+  version?: string
+) {
   if (!query.trim()) {
     return { hits: [] };
   }
 
-  const url = `${API_BASE}/search?query=${encodeURIComponent(query)}&limit=20`;
+  const facets: string[][] = [];
+
+  if (loader) {
+    facets.push([`categories:${loader}`]);
+  }
+
+  if (version) {
+    facets.push([`versions:${version}`]);
+  }
+
+  let url =
+    `${API_BASE}/search?query=${encodeURIComponent(query)}&limit=20`;
+
+  if (facets.length > 0) {
+    url += `&facets=${encodeURIComponent(JSON.stringify(facets))}`;
+  }
 
   const res = await fetch(url);
 
@@ -15,7 +34,6 @@ export async function searchMods(query: string) {
 
   const data = await res.json();
 
-  // Normalize data so UI never breaks
   return {
     hits: (data.hits || []).map((mod: any) => ({
       id: mod.project_id,

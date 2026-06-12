@@ -1,3 +1,5 @@
+import { useModpackStore } from "../../store/modpackStore";
+
 interface BottomNavProps {
   page: string;
   setPage: (page: string) => void;
@@ -7,11 +9,23 @@ export default function BottomNav({
   page,
   setPage,
 }: BottomNavProps) {
+  const mods = useModpackStore((state) => state.mods);
+  const favorites = useModpackStore((state) => state.favorites);
+
   const items = [
     { id: "home", label: "🏠 Home" },
-    { id: "search", label: "🔍 Search" },
-    { id: "modpack", label: "📦 Modpack" },
-    { id: "favorites", label: "❤️ Favorites" },
+    {
+      id: "search",
+      label: `🔍 Search`,
+    },
+    {
+      id: "modpack",
+      label: `📦 Modpack (${mods.length})`,
+    },
+    {
+      id: "favorites",
+      label: `❤️ Fav (${favorites.length})`,
+    },
     { id: "settings", label: "⚙️ Settings" },
   ];
 
@@ -21,8 +35,10 @@ export default function BottomNav({
         <button
           key={item.id}
           onClick={() => setPage(item.id)}
-          className={`text-sm ${
-            page === item.id ? "text-green-400" : "text-zinc-400"
+          className={`text-xs ${
+            page === item.id
+              ? "text-green-400"
+              : "text-zinc-400"
           }`}
         >
           {item.label}
