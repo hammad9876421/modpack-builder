@@ -1,36 +1,31 @@
-import type { SearchResponse } from "../types/mod";
-
 const API_BASE = "https://api.modrinth.com/v2";
 
-export interface SearchOptions {
-  query: string;
-  limit?: number;
-  offset?: number;
-}
-
-export async function searchMods({
-  query,
-  limit = 20,
-  offset = 0,
-}: SearchOptions): Promise<SearchResponse> {
+export async function searchMods(query: string) {
   if (!query.trim()) {
-    return {
-      hits: [],
-      offset: 0,
-      limit,
-      total_hits: 0,
-    };
+    return { hits: [] };
   }
 
-  const url =
-    `${API_BASE}/search?query=${encodeURIComponent(query)}` +
-    `&limit=${limit}&offset=${offset}`;
+  const url = `${API_BASE}/search?query=${encodeURIComponent(query)}&limit=20`;
 
-  const response = await fetch(url);
+  const res = await fetch(url);
 
-  if (!response.ok) {
-    throw new Error(`Modrinth API Error: ${response.status}`);
+  if (!res.ok) {
+    throw new Error("Failed to fetch mods from Modrinth");
   }
 
-  return response.json();
+  const data = await res.json();
+
+  // Normalize data so UI never breaks
+  return {
+    hits: (data.hits || []).map((mod: any) => ({
+      id: mod.project_id,
+      slug: mod.slug,
+      title: mod.title,
+      description: mod.description,
+      icon_url: mod.icon_url || "",
+      downloads: mod.downloads || 0,
+      categories: mod.categories || [],
+      author: mod.author || "Unknown",
+    })),
+  };
 }
