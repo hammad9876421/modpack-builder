@@ -7,12 +7,13 @@ import Favorites from "./pages/Favorites";
 import Settings from "./pages/Settings";
 
 import BottomNav from "./components/layout/BottomNav";
+import ToastManager from "./components/ToastManager";
 
 export default function App() {
   const [page, setPage] = useState("home");
 
   return (
-    <div className="bg-zinc-950 min-h-screen pb-20">
+    <div className="bg-zinc-950 min-h-screen pb-20"> <ToastManager />
       {page === "home" && <Home />}
       {page === "search" && <Search />}
       {page === "modpack" && <Modpack />}

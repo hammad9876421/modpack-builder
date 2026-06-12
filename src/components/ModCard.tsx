@@ -1,4 +1,5 @@
 import { useModpackStore } from "../store/modpackStore";
+import { showToast } from "./ToastManager";
 
 type Props = {
   mod: any;
@@ -29,6 +30,7 @@ export default function ModCard({ mod }: Props) {
       {/* INFO */}
       <div className="flex-1">
         <h2 className="font-bold">{mod.title}</h2>
+
         <p className="text-xs text-zinc-400">
           {mod.author} • {mod.downloads} downloads
         </p>
@@ -39,18 +41,24 @@ export default function ModCard({ mod }: Props) {
 
         {/* ACTIONS */}
         <div className="flex gap-2 mt-3 flex-wrap">
-          
+
           {/* MODPACK BUTTON */}
           {!inModpack ? (
             <button
-              onClick={() => addMod(mod)}
+              onClick={() => {
+                addMod(mod);
+                showToast("✅ Added to Modpack");
+              }}
               className="bg-green-600 px-3 py-1 rounded-lg text-sm"
             >
               + Add
             </button>
           ) : (
             <button
-              onClick={() => removeMod(mod.id)}
+              onClick={() => {
+                removeMod(mod.id);
+                showToast("❌ Removed from Modpack");
+              }}
               className="bg-red-600 px-3 py-1 rounded-lg text-sm"
             >
               Remove
@@ -60,19 +68,26 @@ export default function ModCard({ mod }: Props) {
           {/* FAVORITE BUTTON */}
           {!inFavorites ? (
             <button
-              onClick={() => addFavorite(mod)}
+              onClick={() => {
+                addFavorite(mod);
+                showToast("❤️ Added to Favorites");
+              }}
               className="bg-pink-600 px-3 py-1 rounded-lg text-sm"
             >
               ♥ Fav
             </button>
           ) : (
             <button
-              onClick={() => removeFavorite(mod.id)}
+              onClick={() => {
+                removeFavorite(mod.id);
+                showToast("💔 Removed from Favorites");
+              }}
               className="bg-gray-600 px-3 py-1 rounded-lg text-sm"
             >
               Unfav
             </button>
           )}
+
         </div>
       </div>
     </div>
