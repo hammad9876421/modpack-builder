@@ -1,57 +1,41 @@
 import { create } from "zustand";
-import type { Mod } from "../types/mod";
 
-interface ModpackState {
+export type Mod = {
+  id: string;
+  name: string;
+};
+
+type ModpackState = {
   mods: Mod[];
-  favorites: Mod[];
-
   addMod: (mod: Mod) => void;
   removeMod: (id: string) => void;
+  clearMods: () => void;
+};
 
-  addFavorite: (mod: Mod) => void;
-  removeFavorite: (id: string) => void;
-
-  clearModpack: () => void;
-}
+const saved = localStorage.getItem("modpack");
 
 export const useModpackStore = create<ModpackState>((set) => ({
-  mods: [],
-  favorites: [],
+  mods: saved ? JSON.parse(saved) : [],
 
   addMod: (mod) =>
     set((state) => {
-      if (state.mods.some((m) => m.id === mod.id)) {
-        return state;
-      }
+      const exists = state.mods.find((m) => m.id === mod.id);
+      if (exists) return state;
 
-      return {
-        mods: [...state.mods, mod],
-      };
+      const updated = [...state.mods, mod];
+      localStorage.setItem("modpack", JSON.stringify(updated));
+      return { mods: updated };
     }),
 
   removeMod: (id) =>
-    set((state) => ({
-      mods: state.mods.filter((mod) => mod.id !== id),
-    })),
-
-  addFavorite: (mod) =>
     set((state) => {
-      if (state.favorites.some((m) => m.id === mod.id)) {
-        return state;
-      }
-
-      return {
-        favorites: [...state.favorites, mod],
-      };
+      const updated = state.mods.filter((m) => m.id !== id);
+      localStorage.setItem("modpack", JSON.stringify(updated));
+      return { mods: updated };
     }),
 
-  removeFavorite: (id) =>
-    set((state) => ({
-      favorites: state.favorites.filter((mod) => mod.id !== id),
-    })),
-
-  clearModpack: () =>
-    set(() => ({
-      mods: [],
-    })),
+  clearMods: () => {
+    localStorage.removeItem("modpack");
+    return { mods: [] };
+  },
 }));

@@ -1,49 +1,47 @@
 import { useModpackStore } from "../store/modpackStore";
 
 export default function Modpack() {
-  const mods = useModpackStore((s) => s.mods);
-  const removeMod = useModpackStore((s) => s.removeMod);
-  const clearMods = useModpackStore((s) => s.clearMods);
+  const mods = useModpackStore((state) => state.mods);
+  const removeMod = useModpackStore((state) => state.removeMod);
 
   return (
-    <div className="space-y-3">
+    <div className="min-h-screen bg-zinc-950 text-white p-4">
+      <h1 className="text-3xl font-bold mb-6">
+        My Modpack
+      </h1>
 
-      <div className="bg-[#18181B] p-4 rounded-xl">
-        <h2 className="font-bold">My Modpack</h2>
-        <p className="text-gray-400 text-sm">
-          {mods.length} mods added
-        </p>
-      </div>
-
-      {mods.length === 0 && (
-        <p className="text-gray-500 text-center mt-10">
-          No mods added yet
-        </p>
-      )}
-
-      {mods.map((mod) => (
-        <div
-          key={mod.id}
-          className="bg-[#18181B] p-3 rounded-lg flex justify-between"
-        >
-          <span>{mod.name}</span>
-
-          <button
-            onClick={() => removeMod(mod.id)}
-            className="text-red-400"
-          >
-            Remove
-          </button>
+      {mods.length === 0 ? (
+        <div className="bg-zinc-900 rounded-xl p-6 text-center">
+          <p className="text-zinc-400">
+            No mods added yet.
+          </p>
         </div>
-      ))}
+      ) : (
+        <div className="space-y-4">
+          {mods.map((mod) => (
+            <div
+              key={mod.id}
+              className="bg-zinc-900 rounded-xl p-4 flex justify-between items-center"
+            >
+              <div>
+                <h2 className="font-bold">
+                  {mod.title}
+                </h2>
 
-      {mods.length > 0 && (
-        <button
-          onClick={clearMods}
-          className="w-full p-3 bg-red-500 rounded-lg mt-4"
-        >
-          Clear All
-        </button>
+                <p className="text-sm text-zinc-400">
+                  {mod.author}
+                </p>
+              </div>
+
+              <button
+                onClick={() => removeMod(mod.id)}
+                className="bg-red-600 px-3 py-2 rounded-lg"
+              >
+                Remove
+              </button>
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );
