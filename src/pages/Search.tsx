@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
 import ModCard from "../components/ModCard";
+import ModCardSkeleton from "../components/ModCardSkeleton";
 
 import { searchMods } from "../services/modrinth";
 import type { Mod } from "../types/mod";
@@ -13,11 +14,9 @@ export default function Search() {
   const [error, setError] = useState("");
 
   const [query, setQuery] = useState("");
-
   const [loader, setLoader] = useState("");
   const [version, setVersion] = useState("");
 
-  // main search function
   async function runSearch(q: string, l: string, v: string) {
     if (!q.trim()) {
       setMods([]);
@@ -29,7 +28,6 @@ export default function Search() {
       setError("");
 
       const result = await searchMods(q, l, v);
-
       setMods(result.hits || []);
     } catch (err) {
       setError("Failed to load mods");
@@ -38,21 +36,17 @@ export default function Search() {
     }
   }
 
-  // search when user types
   function handleSearch(q: string) {
     setQuery(q);
   }
 
-  // AUTO trigger when filters change OR query changes
   useEffect(() => {
     if (!query.trim()) return;
-
     runSearch(query, loader, version);
   }, [query, loader, version]);
 
   return (
     <div className="min-h-screen bg-zinc-950 text-white">
-
       <SearchBar onSearch={handleSearch} />
 
       <FilterBar
@@ -64,7 +58,11 @@ export default function Search() {
 
       <div className="p-4">
         {loading && (
-          <p className="text-zinc-400">Searching mods...</p>
+          <>
+            <ModCardSkeleton />
+            <ModCardSkeleton />
+            <ModCardSkeleton />
+          </>
         )}
 
         {error && (
@@ -77,9 +75,11 @@ export default function Search() {
           </p>
         )}
 
-        {mods.map((mod) => (
-          <ModCard key={mod.id} mod={mod} />
-        ))}
+        {!loading &&
+          !error &&
+          mods.map((mod) => (
+            <ModCard key={mod.id} mod={mod} />
+          ))}
       </div>
     </div>
   );
