@@ -1,15 +1,11 @@
-const API_BASE = "https://api.modrinth.com/v2";
-
 export async function searchMods(
   query: string,
-  loader?: string,
-  version?: string
+  loader: string,
+  version: string
 ) {
-  if (!query.trim()) {
-    return { hits: [] };
-  }
+  const url = new URL("https://api.modrinth.com/v2/search");
 
-  const facets: string[][] = [];
+  const facets: any[] = [];
 
   if (loader) {
     facets.push([`categories:${loader}`]);
@@ -19,31 +15,21 @@ export async function searchMods(
     facets.push([`versions:${version}`]);
   }
 
-  let url =
-    `${API_BASE}/search?query=${encodeURIComponent(query)}&limit=20`;
+  const params: any = {
+    query,
+  };
 
   if (facets.length > 0) {
-    url += `&facets=${encodeURIComponent(JSON.stringify(facets))}`;
+    params.facets = JSON.stringify(facets);
   }
 
-  const res = await fetch(url);
+  url.search = new URLSearchParams(params).toString();
+
+  const res = await fetch(url.toString());
 
   if (!res.ok) {
-    throw new Error("Failed to fetch mods from Modrinth");
+    throw new Error("Search failed");
   }
 
-  const data = await res.json();
-
-  return {
-    hits: (data.hits || []).map((mod: any) => ({
-      id: mod.project_id,
-      slug: mod.slug,
-      title: mod.title,
-      description: mod.description,
-      icon_url: mod.icon_url || "",
-      downloads: mod.downloads || 0,
-      categories: mod.categories || [],
-      author: mod.author || "Unknown",
-    })),
-  };
+  return await res.json();
 }

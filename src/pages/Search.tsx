@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useConfigStore } from "../store/configStore";
 
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
@@ -14,10 +15,11 @@ export default function Search() {
   const [error, setError] = useState("");
 
   const [query, setQuery] = useState("");
-  const [loader, setLoader] = useState("");
+  const [localLoader, setLocalLoader] = useState("");
   const [version, setVersion] = useState("");
-
-  async function runSearch(q: string, l: string, v: string) {
+  const { minecraftVersion, loader: configLoader } = useConfigStore();
+  
+async function runSearch(q: string, l: string, v: string) {
     if (!q.trim()) {
       setMods([]);
       return;
@@ -27,7 +29,7 @@ export default function Search() {
       setLoading(true);
       setError("");
 
-      const result = await searchMods(q, l, v);
+      const result = await searchMods(q, loader, minecraftVersion);
       setMods(result.hits || []);
     } catch (err) {
       setError("Failed to load mods");
@@ -42,7 +44,7 @@ export default function Search() {
 
   useEffect(() => {
     if (!query.trim()) return;
-    runSearch(query, loader, version);
+    runSearch(query, configLoader || localLoader, minecraftVersion);
   }, [query, loader, version]);
 
   return (
