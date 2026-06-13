@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useConfigStore } from "../store/configStore";
+import ModInfoModal from "../components/mod/ModInfoModal";
 
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
@@ -18,6 +19,7 @@ export default function Search() {
   const [localLoader, setLocalLoader] = useState("");
   const [version, setVersion] = useState("");
   const { minecraftVersion, loader: configLoader } = useConfigStore();
+  const [selectedMod, setSelectedMod] = useState<Mod | null>(null);
   
 async function runSearch(q: string, l: string, v: string) {
     if (!q.trim()) {
@@ -80,7 +82,13 @@ async function runSearch(q: string, l: string, v: string) {
         {!loading &&
           !error &&
           mods.map((mod) => (
-            <ModCard key={mod.id} mod={mod} />
+            <div onClick={() => setSelectedMod(mod)}>
+  <ModCard mod={mod} />
+<ModInfoModal
+  mod={selectedMod}
+  onClose={() => setSelectedMod(null)}
+/>	
+</div>
           ))}
       </div>
     </div>
