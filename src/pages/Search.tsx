@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useConfigStore } from "../store/configStore";
 import ModInfoModal from "../components/mod/ModInfoModal";
+import VersionSelector from "../components/VersionSelector";
 
 import SearchBar from "../components/SearchBar";
 import FilterBar from "../components/FilterBar";
@@ -54,11 +55,13 @@ async function runSearch(q: string, l: string, v: string) {
       <SearchBar onSearch={handleSearch} />
 
       <FilterBar
-        loader={loader}
-        version={version}
-        onLoaderChange={setLoader}
-        onVersionChange={setVersion}
-      />
+  loader={loader}
+  version={version}
+  onLoaderChange={setLoader}
+  onVersionChange={setVersion}
+/>
+
+<VersionSelector />
 
       <div className="p-4">
         {loading && (
