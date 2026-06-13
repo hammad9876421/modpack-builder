@@ -1,4 +1,13 @@
+import { useConfigStore } from "../store/configStore";
+
 export default function Settings() {
+  const {
+    minecraftVersion,
+    loader,
+    setMinecraftVersion,
+    setLoader,
+  } = useConfigStore();
+
   return (
     <div className="min-h-screen bg-zinc-950 text-white p-4 pb-24">
 
@@ -6,38 +15,48 @@ export default function Settings() {
         Settings
       </h1>
 
-      <div className="space-y-4">
+      {/* MINECRAFT VERSION */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
 
-        <div className="bg-zinc-900 rounded-xl p-4">
-          <h2 className="font-bold">
-            Version
-          </h2>
+        <h2 className="font-semibold mb-2">
+          Minecraft Version
+        </h2>
 
-          <p className="text-zinc-400">
-            Modpack Builder v0.1
-          </p>
-        </div>
+        <select
+          value={minecraftVersion}
+          onChange={(e) => setMinecraftVersion(e.target.value)}
+          className="w-full bg-zinc-800 p-3 rounded-lg text-white"
+        >
+          <option value="1.21.1">1.21.1</option>
+          <option value="1.21.0">1.21.0</option>
+          <option value="1.20.1">1.20.1</option>
+          <option value="1.19.4">1.19.4</option>
+        </select>
 
-        <div className="bg-zinc-900 rounded-xl p-4">
-          <h2 className="font-bold">
-            Storage
-          </h2>
+      </div>
 
-          <p className="text-zinc-400">
-            Local browser storage enabled.
-          </p>
-        </div>
+      {/* LOADER */}
+      <div className="bg-zinc-900 border border-zinc-800 rounded-xl p-4 mb-4">
 
-        <div className="bg-zinc-900 rounded-xl p-4">
-          <h2 className="font-bold">
-            Theme
-          </h2>
+        <h2 className="font-semibold mb-2">
+          Mod Loader
+        </h2>
 
-          <p className="text-zinc-400">
-            Dark Mode
-          </p>
-        </div>
+        <select
+          value={loader}
+          onChange={(e) => setLoader(e.target.value)}
+          className="w-full bg-zinc-800 p-3 rounded-lg text-white"
+        >
+          <option value="neoforge">NeoForge</option>
+          <option value="forge">Forge</option>
+          <option value="fabric">Fabric</option>
+          <option value="quilt">Quilt</option>
+        </select>
 
+      </div>
+
+      <div className="text-sm text-zinc-500 mt-6">
+        These settings will control search and compatibility checks.
       </div>
 
     </div>
