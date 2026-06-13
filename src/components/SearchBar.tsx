@@ -18,26 +18,39 @@ export default function SearchBar({
     onSearch(debouncedQuery);
   }, [debouncedQuery, onSearch]);
 
+  function clearSearch() {
+    setQuery("");
+  }
+
   return (
-    <div className="w-full p-4">
-      <input
-        type="text"
-        value={query}
-        placeholder={placeholder}
-        onChange={(e) => setQuery(e.target.value)}
-        className="
-          w-full
-          rounded-xl
-          bg-zinc-900
-          border
-          border-zinc-700
-          px-4
-          py-3
-          text-white
-          outline-none
-          focus:border-green-500
-        "
-      />
+    <div className="p-4">
+
+      <div className="flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded-2xl px-4 py-3">
+
+        <span className="text-xl">
+          🔍
+        </span>
+
+        <input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder={placeholder}
+          className="flex-1 bg-transparent outline-none text-white placeholder:text-zinc-500"
+        />
+
+        {query.length > 0 && (
+
+          <button
+            onClick={clearSearch}
+            className="text-zinc-400 text-lg active:scale-95"
+          >
+            ✕
+          </button>
+
+        )}
+
+      </div>
+
     </div>
   );
 }
